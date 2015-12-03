@@ -2,12 +2,9 @@
 # Copyright (c) Microsoft Corporation, 2015
 #
 
-# Import-Module $PSScriptRoot\..\LanguageTestSupport.psm1
-$testDir = [io.path]::GetDirectoryName($myinvocation.mycommand.path)
-$SupportModule = (resolve-path "$testDir\..\LanguageTestSupport.psm1").path
-import-module $SupportModule -force
+Import-Module $PSScriptRoot\..\LanguageTestSupport.psm1
 
-Describe 'Classes inheritance syntax' {
+Describe 'Classes inheritance syntax' -Tags "DRT" {
 
     It 'Base types' {
         class C1 {}
@@ -84,7 +81,7 @@ Describe 'Classes inheritance syntax' {
     }
 }
 
-Describe 'Classes inheritance syntax errors' { 
+Describe 'Classes inheritance syntax errors' -Tags "DRT" { 
     ShouldBeParseError "class A : NonExistingClass {}" TypeNotFound 10
     ShouldBeParseError "class A : {}" TypeNameExpected 9
     ShouldBeParseError "class A {}; class B : A, {}" TypeNameExpected 24
@@ -121,7 +118,7 @@ Describe 'Classes inheritance syntax errors' {
     ShouldBeParseError "class A : C {}; class B : A {}; class C : B {}" TypeNotFound 10 -SkipAndCheckRuntimeError
 }
 
-Describe 'Classes methods with inheritance' {
+Describe 'Classes methods with inheritance' -Tags "DRT" {
 
     Context 'Method calls' {
 
@@ -370,7 +367,7 @@ Describe 'Classes methods with inheritance' {
 }
 
 
-Describe 'Classes inheritance ctors syntax errors' {
+Describe 'Classes inheritance ctors syntax errors' -Tags "DRT" {
     
     #DotNet.Interface.NotImplemented
     ShouldBeParseError "class MyComparable : system.IComparable {}" TypeCreationError 0 -SkipAndCheckRuntimeError
@@ -385,7 +382,7 @@ Describe 'Classes inheritance ctors syntax errors' {
     ShouldBeParseError 'class A { A([int]$a) {} }; class B : A {}' BaseClassNoDefaultCtor 27 -SkipAndCheckRuntimeError
 }
 
-Describe 'Classes inheritance ctors' {
+Describe 'Classes inheritance ctors' -Tags "DRT" {
     
     It 'can call base ctor' {
         class A { 
@@ -508,5 +505,25 @@ Describe 'Classes inheritance ctors' {
         $b2 = [B]::new(1001)
         $b1.s | Should Be "foo"
         $b2.i | Should Be 1001
+    }
+}
+
+Describe 'Type creation' {
+    It 'can call super-class methods sequentially' {
+        $sb = [scriptblock]::Create(@'
+class Base
+{
+    [int] foo() { return 100 }
+}
+
+class Derived : Base
+{
+    [int] foo() { return 2 * ([Base]$this).foo() }
+}
+
+[Derived]::new().foo() 
+'@)
+        $sb.Invoke() | Should Be 200
+        $sb.Invoke() | Should Be 200
     }
 }

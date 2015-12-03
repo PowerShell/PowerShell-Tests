@@ -1,5 +1,5 @@
 
-Describe "Using assembly" {
+Describe "Using assembly" -Tags "DRT" {
 
     try
     {

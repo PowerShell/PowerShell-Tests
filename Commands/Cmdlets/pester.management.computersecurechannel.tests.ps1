@@ -27,7 +27,7 @@ if(ShouldRun)
             $localHostNames | % { Test-ComputerSecureChannel -Server $_ | Should Be $true }
         }
 
-        It "works with repair" {
+        It -pending "works with repair" {
             Test-ComputerSecureChannel -Repair | Should Be $true
         }
 

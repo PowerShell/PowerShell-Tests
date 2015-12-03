@@ -259,7 +259,6 @@ Describe "Test extensible completion of using namespace" -Tags "Innerloop", "BVT
             @{CompletionText = "System.Management.Automation.Remoting"; ResultType = "Namespace"}
             @{CompletionText = "System.Management.Automation.Runspaces"; ResultType = "Namespace"}
             @{CompletionText = "System.Management.Automation.Security"; ResultType = "Namespace"}
-            @{CompletionText = "System.Management.Automation.Sqm"; ResultType = "Namespace"}
             )
         TestInput = 'using namespace System.Management.Automation.'
     } | Get-CompletionTestCaseData | Test-Completions

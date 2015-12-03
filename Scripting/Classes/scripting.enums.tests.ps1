@@ -1,9 +1,8 @@
 #
 # Copyright (c) Microsoft Corporation, 2015
 #
-$testDir = [io.path]::GetDirectoryName($myinvocation.mycommand.path)
 
-Describe 'enums' {
+Describe 'enums' -Tags "DRT" {
 
     Context 'basic enums' {
         enum E1
@@ -74,11 +73,9 @@ Describe 'enums' {
     }
 }
 
-Describe 'Basic enum errors' {
+Describe 'Basic enum errors' -Tags "DRT" {
 
-    # Import-Module $PSScriptRoot\..\LanguageTestSupport.psm1
-    $SupportModule = (resolve-path "$testDir\..\LanguageTestSupport.psm1").path
-    import-module $SupportModule -force
+    Import-Module $PSScriptRoot\..\LanguageTestSupport.psm1
 
     AfterAll {
         Remove-Module LanguageTestSupport

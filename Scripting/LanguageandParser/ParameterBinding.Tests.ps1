@@ -1,6 +1,6 @@
 
-Describe 'Argument transformation attribute on optional argument with explicit $null' {
-    $modDefinition = @'
+Describe 'Argument transformation attribute on optional argument with explicit $null' -Tags "P1", "RI" {
+    $mod = Add-Type -PassThru -TypeDefinition @'
     using System;
     using System.Management.Automation;
     using System.Reflection;
@@ -46,16 +46,7 @@ Describe 'Argument transformation attribute on optional argument with explicit $
     }
 '@
 
-    $Type = "MSFT_1407291.AddressTransformationAttribute" -as "Type" 
-    if ( $Type -eq $null )
-    {
-        $mod = Add-Type -PassThru -TypeDefinition $modDefinition
-        Import-Module $mod[0].Assembly
-    }
-    else
-    {
-        import-module $type.Assembly
-    }
+    Import-Module $mod[0].Assembly
 
     function Invoke-ScriptFunctionTakesObject
     {
@@ -76,29 +67,13 @@ Describe 'Argument transformation attribute on optional argument with explicit $
     }
 
 
-    It "Script function that takes has an attribute on an object parameter should take affect" {
-        Invoke-ScriptFunctionTakesObject | Should Be 42
-    }
-    It "Script function that takes has an attribute on an UInt parameter should take affect" {
-        Invoke-ScriptFunctionTakesUInt64 | Should Be 42
-    }
-    It "C# cmdlet that takes has an attribute on an object parameter should take affect" {
+    Invoke-ScriptFunctionTakesObject | Should Be 42
+    Invoke-ScriptFunctionTakesUInt64 | Should Be 42
     Invoke-CSharpCmdletTakesObject | Should Be "passed in null"
-    }
-    It "C# cmdlet that takes has an attribute on an uint parameter should take affect" {
-        Invoke-CSharpCmdletTakesUInt64 | Should Be 0
-    }
+    Invoke-CSharpCmdletTakesUInt64 | Should Be 0
 
-    It "Script function that takes has an attribute on a null value object parameter should take affect" {
-        Invoke-ScriptFunctionTakesObject -Address $null | Should Be 42
-    }
-    It "Script function that takes has an attribute on a null value UInt parameter should take affect" {
-        Invoke-ScriptFunctionTakesUInt64 -Address $null | Should Be 42
-    }
-    It "C# cmdlet that takes has an attribute on a null value object parameter should take affect" {
-        Invoke-CSharpCmdletTakesObject -Address $null | Should Be 42
-    }
-    It "C# cmdlet that takes has an attribute on a null value uint parameter should take affect" {
-        Invoke-CSharpCmdletTakesUInt64 -Address $null | Should Be 42
-    }
+    Invoke-ScriptFunctionTakesObject -Address $null | Should Be 42
+    Invoke-ScriptFunctionTakesUInt64 -Address $null | Should Be 42
+    Invoke-CSharpCmdletTakesObject -Address $null | Should Be 42
+    Invoke-CSharpCmdletTakesUInt64 -Address $null | Should Be 42
 }

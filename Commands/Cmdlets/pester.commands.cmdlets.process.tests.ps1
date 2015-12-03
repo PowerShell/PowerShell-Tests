@@ -4,11 +4,10 @@ Describe "Process cmdlets" {
         BeforeAll {
             $username = "StartProcessTest"
             $password = "pass@word1"
-            $output = "$env:temp\output.txt"
             $computerName = $env:COMPUTERNAME
 
             ## Setup test user
-            Start-Process -FilePath net.exe -ArgumentList ("user $username $password /add") -NoNewWindow -Wait
+            Start-Process -FilePath net.exe -ArgumentList ("user $username $password /add") -NoNewWindow -Wait 
 
             ## Create credential for the user.
             $secureString = $password | ConvertTo-SecureString -AsPlainText -Force
@@ -19,11 +18,13 @@ Describe "Process cmdlets" {
 
         It "can start process with credentials" {  
 
+            $output = "$env:temp\output.txt"
             ## Start a process with credential 
-            Start-Process powershell.exe -Credential $credential -ArgumentList ("-command whoami") -NoNewWindow -Wait -WorkingDirectory $env:SystemDrive -RedirectStandardOutput $output -LoadUserProfile  
+            Start-Process powershell.exe -Credential $credential -ArgumentList ("-command whoami") -NoNewWindow -Wait -WorkingDirectory $env:SystemDrive -RedirectStandardOutput $output -LoadUserProfile
             
             ## Read the output of whoami 
-            $(Get-Content $output) | Should Be "$computerName\$username"
+            $result = Get-Content $output
+            $result | Should Be "$computerName\$username"
         }
 
         AfterAll {            

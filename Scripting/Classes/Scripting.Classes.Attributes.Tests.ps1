@@ -1,4 +1,4 @@
-Describe 'Attributes Test' -Tags "innerloop" {
+Describe 'Attributes Test' -Tags "innerloop", "DRT" {
     
     BeforeAll { 
         $dummyAttributesSource = @'
@@ -195,4 +195,24 @@ namespace Dummy
             $c.arg | should be "foo___foo___"
         }
     }  
+}
+
+Describe 'Type resolution with attributes' {
+    # There is kind of a collision between names 
+    # System.Diagnostics.Tracing.EventSource
+    # System.Diagnostics.Tracing.EventSourceAttribute
+    # We need to make sure that we resolve type name to the right class at each usage
+    Context 'Name collision' {
+        
+        It 'Resolve System.Diagnostics.Tracing.EventSource to Attribute and to Type in the different contexts' {
+            [System.Diagnostics.Tracing.EventSource(Name = "MyPSEventSource")]
+            class MyEventSource : System.Diagnostics.Tracing.EventSource 
+            { 
+                [void] OnEvent([string]$Message) {} 
+            }
+
+            [MyEventSource]::new() | Should Not Be $null
+
+        }
+    }
 }

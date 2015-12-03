@@ -262,7 +262,7 @@ Describe -tags 'Innerloop', 'DRT' "bug948569" {
 	}
 }
 
-Describe -tags 'Innerloop', 'P1' "OutputRedirectTests" {
+Describe -tags 'Innerloop','P1' "OutputRedirectTests" {
     BeforeAll {
         $CurrentVerbosePreference = $VerbosePreference 
         $CurrentDebugPreference = $DebugPreference
@@ -2979,14 +2979,14 @@ Describe -tags 'Innerloop', 'P1' "WinBlue_209579" {
     }
 
     ## Setup the test file content
-	It "The ExitCode should be set to be 1 when the execution policy prevents the script file to run" {
+	It -pending "The ExitCode should be set to be 1 when the execution policy prevents the script file to run" {
         powershell.exe -noprofile -executionpolicy AllSigned -file $baseTestFile 2>&1 | Out-Null
 		$LASTEXITCODE | Should Be 1
 	}
 
-	It "The ExitCode should be 0, since the PSSecurityException happens during the execution of the -file script" {
+	It "The ExitCode should be 1, since the PSSecurityException happens during the execution of the -file script" {
         powershell.exe -noprofile -executionpolicy Unrestricted -file $baseTestFile 2>&1 | Out-Null
-		$LASTEXITCODE | Should Be 0
+		$LASTEXITCODE | Should Be 1
 	}
 }
 

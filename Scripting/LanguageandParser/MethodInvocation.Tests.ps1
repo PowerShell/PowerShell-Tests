@@ -1,5 +1,5 @@
 
-Describe "Interface inheritance with remoting proxies" {
+Describe "Interface inheritance with remoting proxies" -Tags "P1", "RI" {
     $src = @"
 using System;
 using System.ServiceModel;

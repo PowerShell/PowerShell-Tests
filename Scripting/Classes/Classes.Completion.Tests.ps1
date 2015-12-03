@@ -1,8 +1,5 @@
-# Import-Module ..\CompletionTestSupport.psm1 -force
-$testDir = [io.path]::GetDirectoryName($myinvocation.mycommand.path)
-$SupportModule = (resolve-path "$testDir\..\CompletionTestSupport.psm1").path
-import-module $SupportModule -force
-
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+Import-Module $here\..\CompletionTestSupport.psm1 -force
 
 # Convince the Pester Harness adapter that this is a pester test
 if ($false) { Describe; It }
@@ -41,6 +38,7 @@ if ($false) { Describe; It }
         TestInput = @{inputScript = 'class C04 { static ABC() {} static DEF() {} } [C04]::'}
     } | Get-CompletionTestCaseData | Test-Completions
 
+
     @{
         Description = "Completion Within Class C01" 
         ExpectedResults = @(
@@ -56,6 +54,7 @@ if ($false) { Describe; It }
         NotExpectedResults = @("B01")
         TestInput = @{inputScript = 'class C01 { $ABC; $DEF [C01] Foo { return $null} } class C02 { [C0] Bar { return $null } class B01 {$path} }';cursorColumn=66}
     }| Get-CompletionTestCaseData | Test-Completions
+
 
     @{
         Description = "Complete From This" 

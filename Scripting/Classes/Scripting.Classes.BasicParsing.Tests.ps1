@@ -1,12 +1,9 @@
 #
 # Copyright (c) Microsoft Corporation, 2014
 #
-#Import-Module ..\LanguageTestSupport.psm1 -force
-$testDir = [io.path]::GetDirectoryName($myinvocation.mycommand.path)
-$SupportModule = (resolve-path "$testDir\..\LanguageTestSupport.psm1").path
-import-module $SupportModule -force
+Import-Module $PSScriptRoot\..\LanguageTestSupport.psm1 -force
 
-Describe 'Positive Parse Properties Tests' -Tags "innerloop" {
+Describe 'Positive Parse Properties Tests' -Tags "innerloop", "DRT" {
     It 'PositiveParsePropertiesTest' {
         # Just a bunch of random basic things here
         # This test doesn't need to check anything, if there are
@@ -239,7 +236,7 @@ Describe 'Positive Parse Properties Tests' -Tags "innerloop" {
         }
     }
 }
-Describe 'Negative Parsing Tests' -Tags "innerloop" {
+Describe 'Negative Parsing Tests' -Tags "innerloop", "DRT" {
     ShouldBeParseError 'class' MissingNameAfterKeyword 5
     ShouldBeParseError 'class foo' MissingTypeBody 9
     ShouldBeParseError 'class foo {' MissingEndCurlyBrace 10
@@ -258,6 +255,7 @@ Describe 'Negative Parsing Tests' -Tags "innerloop" {
         
     ShouldBeParseError 'class C {} class C {}' MemberAlreadyDefined 11
     ShouldBeParseError 'class C { f(){} f(){} }' MemberAlreadyDefined 16 -SkipAndCheckRuntimeError
+    ShouldBeParseError 'class C { F(){} F($o){} [int] F($o) {return 1} }' MemberAlreadyDefined 24 -SkipAndCheckRuntimeError
     ShouldBeParseError 'class C { f(){} f($a){} f(){} }' MemberAlreadyDefined 24 -SkipAndCheckRuntimeError
     ShouldBeParseError 'class C { f([int]$a){} f([int]$b){} }' MemberAlreadyDefined 23 -SkipAndCheckRuntimeError
     ShouldBeParseError 'class C { $x; [int]$x; }' MemberAlreadyDefined 14 -SkipAndCheckRuntimeError
@@ -297,7 +295,7 @@ Describe 'Negative Parsing Tests' -Tags "innerloop" {
     ShouldBeParseError 'class C { static [int]$i; [void] foo() {$i = 10} }' MissingTypeInStaticPropertyAssignment 40
 }
 
-Describe 'Negative methods Tests' -Tags "innerloop" {    
+Describe 'Negative methods Tests' -Tags "innerloop", "DRT" {    
     ShouldBeParseError 'class foo { f() { param($x) } }' ParamBlockNotAllowedInMethod 18
     ShouldBeParseError 'class foo { f() { dynamicparam {} } }' NamedBlockNotAllowedInMethod 18
     ShouldBeParseError 'class foo { f() { begin {} } }' NamedBlockNotAllowedInMethod 18
@@ -308,13 +306,13 @@ Describe 'Negative methods Tests' -Tags "innerloop" {
     ShouldBeParseError 'class foo { [void] bar($a, [string][int]$b, $c) {} }' MultipleTypeConstraintsOnMethodParam 35
 }
 
-Describe 'Negative Assignment Tests' -Tags "innerloop" {    
+Describe 'Negative Assignment Tests' -Tags "innerloop", "DRT" {    
     ShouldBeParseError 'class foo { [string ]$path; f() { $path="" } }' MissingThis 34
     ShouldBeParseError 'class foo { [string ]$path; f() { [string] $path="" } }' MissingThis 43
     ShouldBeParseError 'class foo { [string ]$path; f() { [int] [string] $path="" } }' MissingThis 49
 }
 
-Describe 'Negative Assignment Tests' -Tags "innerloop" { 
+Describe 'Negative Assignment Tests' -Tags "innerloop", "DRT" { 
     ShouldBeParseError '[DscResource()]class C { [bool] Test() { return $false } [C] Get() { return $this } Set() {} }' DscResourceMissingKeyProperty 0
 
     # Test method
@@ -338,7 +336,7 @@ Describe 'Negative Assignment Tests' -Tags "innerloop" {
     ShouldBeParseError '[DscResource()]class C { [DscProperty(Key)][string]$Key; [bool] Test() { return $false } [C] Get() { return $this } Set() {} C($a) { } }' DscResourceMissingDefaultConstructor 0
 }
     
-Describe 'Negative DscResources Tests' -Tags "innerloop" { 
+Describe 'Negative DscResources Tests' -Tags "innerloop", "DRT" { 
         # Usage errors
         ShouldBeParseError '[Flags()]class C{}' AttributeNotAllowedOnDeclaration 0
         ShouldBeParseError 'class C { [Flags()]$field; }' AttributeNotAllowedOnDeclaration 10
@@ -355,7 +353,7 @@ Describe 'Negative DscResources Tests' -Tags "innerloop" {
         ShouldBeParseError 'class C{ [ValidateScript({})]$p; }' ParameterAttributeArgumentNeedsToBeConstant 25
 }
 
-Describe 'Negative ClassAttributes Tests' -Tags "innerloop" { 
+Describe 'Negative ClassAttributes Tests' -Tags "innerloop", "DRT" { 
     
         [System.Management.Automation.Cmdlet("Get", "Thing")]class C{}
         $t = [C].GetCustomAttributes($false)
@@ -380,7 +378,7 @@ Describe 'Negative ClassAttributes Tests' -Tags "innerloop" {
 }
     
 
-Describe 'Property Attributes Test' -Tags "innerloop" {
+Describe 'Property Attributes Test' -Tags "innerloop", "DRT" {
         class C { [ValidateSet('a', 'b')]$p; }
 
         $t = [C].GetProperty('p').GetCustomAttributes($false)
@@ -391,7 +389,7 @@ Describe 'Property Attributes Test' -Tags "innerloop" {
         It "second value should be b" { $v.ValidValues[1] -eq 'b' }
     }
 
-Describe 'Method Attributes Test' -Tags "innerloop" {
+Describe 'Method Attributes Test' -Tags "innerloop", "DRT" {
         class C { [Obsolete("aaa")][int]f() { return 1 } } 
 
         $t = [C].GetMethod('f').GetCustomAttributes($false)
@@ -399,7 +397,7 @@ Describe 'Method Attributes Test' -Tags "innerloop" {
         It "Attribute type should be ObsoleteAttribute" { $t[0].GetType().FullName | should be System.ObsoleteAttribute } 
     }
 
-Describe 'Positive SelfClass Type As Parameter Test' -Tags "innerloop" {    
+Describe 'Positive SelfClass Type As Parameter Test' -Tags "innerloop", "DRT" {    
         class Point
         {
             Point($x, $y) { $this.x = $x; $this.y = $y }
@@ -431,7 +429,7 @@ Describe 'Positive SelfClass Type As Parameter Test' -Tags "innerloop" {
         }         
     }
 
-Describe 'PositiveReturnSelfClassTypeFromMemberFunction Test' -Tags "innerloop" {
+Describe 'PositiveReturnSelfClassTypeFromMemberFunction Test' -Tags "innerloop", "DRT" {
         class ReturnObjectFromMemberFunctionTest
         {
             [ReturnObjectFromMemberFunctionTest] CreateInstance()
@@ -448,7 +446,7 @@ Describe 'PositiveReturnSelfClassTypeFromMemberFunction Test' -Tags "innerloop" 
         It "CreateInstance works" { $z.SayHello() | should be 'Hello1' } 
     }
 
-Describe 'TestMultipleArguments Test' -Tags "innerloop" {    
+Describe 'TestMultipleArguments Test' -Tags "innerloop", "DRT" {    
         for ($i = 0; $i -lt 16; $i++)
         {
             $properties = $(for ($j = 0; $j -le $i; $j++) {
@@ -502,7 +500,7 @@ $ctorAssignments
             Invoke-Expression $class
         }
     }
-Describe 'Scopes Test' -Tags "innerloop" {     
+Describe 'Scopes Test' -Tags "innerloop", "DRT" {     
         class C1
         {
             static C1() {
@@ -520,7 +518,7 @@ Describe 'Scopes Test' -Tags "innerloop" {
         }
     }
 
-Describe 'Check PS Class Assembly Test' -Tags "innerloop" {
+Describe 'Check PS Class Assembly Test' -Tags "innerloop", "DRT" {
         class C1 {}
         $assem = [C1].Assembly
         $attrs = @($assem.GetCustomAttributes($true))
@@ -528,7 +526,7 @@ Describe 'Check PS Class Assembly Test' -Tags "innerloop" {
         It "Expected a DynamicClassImplementationAssembly attribute" { $expectedAttr.Length | should be 1}
     }
 
-Describe 'ScriptScopeAccessFromClassMethod' -Tags "innerloop" { 
+Describe 'ScriptScopeAccessFromClassMethod' -Tags "innerloop", "DRT" { 
         Import-Module "$PSScriptRoot\MSFT_778492.psm1"
         try
         {
@@ -541,7 +539,7 @@ Describe 'ScriptScopeAccessFromClassMethod' -Tags "innerloop" {
         }
     }
 
-Describe 'Hidden Members Test ' -Tags "innerloop" {
+Describe 'Hidden Members Test ' -Tags "innerloop", "DRT" {
         class C1
         {
             [int]$visibleX
@@ -575,13 +573,13 @@ Describe 'Hidden Members Test ' -Tags "innerloop" {
         It "Tab completion should not return a hidden member" { $completions.CompletionMatches.Count | should be 0 }        
     }
 
-Describe 'BaseMethodCall Test ' -Tags "innerloop" {
+Describe 'BaseMethodCall Test ' -Tags "innerloop", "DRT" {
         It "Derived class method call" {"abc".ToString() | should be "abc" }        
         # call [object] ToString() method as a base class method.
         It "Base class method call" {([object]"abc").ToString() | should be "System.String" }        
     }
 
-Describe 'Scoped Types Test' -Tags "innerloop" {
+Describe 'Scoped Types Test' -Tags "innerloop", "DRT" {
         class C1 { [string] GetContext() { return "Test scope" } }
 
         filter f1
@@ -609,7 +607,7 @@ Describe 'Scoped Types Test' -Tags "innerloop" {
         It "'new-object C1' in nested scope (in pipeline)" { (1 | f2 | f1 | f2) | should be "f2 scope" }
     }
 
-Describe 'ParameterOfClassTypeInModule Test' -Tags "innerloop" {    
+Describe 'ParameterOfClassTypeInModule Test' -Tags "innerloop", "DRT" {    
         try
         {
             $sb = [scriptblock]::Create(@'
@@ -626,7 +624,7 @@ function test-it([EE]$ee){$ee}
         }
     }
 
-Describe 'Type building' {
+Describe 'Type building' -Tags "DRT" {
     It 'should build the type only once for scriptblock' {
         $a = $null
         1..10 | % {
@@ -636,5 +634,176 @@ Describe 'Type building' {
             }
             $a = [C]
         }  
+    }
+
+    It 'should create a new type every time scriptblock executed?' -Pending {
+        $sb = [scriptblock]::Create('class A {static [int] $a }; [A]::new()')
+        1..2 | % {
+        $a = $sb.Invoke()[0]
+            ++$a::a | Should Be 1
+            ++$a::a | Should Be 2
+        }
+    }
+}
+
+Describe 'RuntimeType created for TypeDefinitionAst' {
+    
+    It 'can make cast to the right RuntimeType in two different contexts' {
+        
+        $ssfe = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::new("foo", @'
+class Base
+{
+    [int] foo() { return 100 }
+}
+
+class Derived : Base
+{
+    [int] foo() { return 2 * ([Base]$this).foo() }
+}
+
+[Derived]::new().foo()
+'@)
+
+        $iss = [System.Management.Automation.Runspaces.initialsessionstate]::CreateDefault()
+        $iss.Commands.Add($ssfe)
+
+        $ps = [powershell]::Create($iss)
+        $ps.AddCommand("foo").Invoke() | Should be 200
+        $ps.Streams.Error | Should Be $null
+
+        $ps1 = [powershell]::Create($iss)
+        $ps1.AddCommand("foo").Invoke() | Should be 200
+        $ps1.Streams.Error | Should Be $null
+
+        $ps.Commands.Clear()
+        $ps.Streams.Error.Clear()
+        $ps.AddScript(". foo").Invoke() | Should be 200
+        $ps.Streams.Error | Should Be $null
+    }
+}
+
+Describe 'TypeTable lookups' {
+    
+    Context 'Call methods from a different thread' {
+        $b = [powershell]::Create().AddScript(
+@'
+class A {}
+class B
+{
+    [object] getA1() { return New-Object A }
+    [object] getA2() { return [A]::new() }
+}
+
+[B]::new()
+
+'@).Invoke()[0]
+
+        It 'can do type lookup by name' {
+            $b.getA1() | Should Be 'A'
+        }
+
+        It 'can do type lookup by [type]' {
+            $b.getA2() | Should Be 'A'
+        }
+    }
+}
+
+Describe 'Protected method access' {
+
+    Add-Type @'
+namespace Foo
+{
+    public class Bar
+    {
+        protected int x {get; set;}
+    }
+}
+'@
+
+     It 'doesn''t allow protected methods access outside of inheritance chain' {
+        $a = [scriptblock]::Create(@'
+class A
+{ 
+    SetX([Foo.Bar]$bar, [int]$x) 
+    {
+        $bar.x = $x
+    } 
+    
+    [int] GetX([Foo.Bar]$bar) 
+    {
+        Set-StrictMode -Version latest
+        return $bar.x
+    } 
+}
+[A]::new()
+
+'@).Invoke()
+        $bar = [Foo.Bar]::new()
+        $throwCount = 0
+        try {
+            $a.SetX($bar, 42)
+        } catch {
+            $_.FullyQualifiedErrorId | Should Be PropertyAssignmentException
+            $throwCount++
+        }
+        try {
+            $a.GetX($bar)
+        } catch {
+            $_.FullyQualifiedErrorId | Should Be PropertyNotFoundStrict
+            $throwCount++
+        }
+        $throwCount | Should Be 2
+     }
+
+     It 'can call protected methods sequentially from two different contexts' {
+        $ssfe = [System.Management.Automation.Runspaces.SessionStateFunctionEntry]::new("foo", @'
+class A : Foo.Bar 
+{ 
+    SetX([int]$x)   
+    {
+        $this.x = $x
+    } 
+    
+    [int] GetX() 
+    {
+        return $this.x 
+    } 
+}
+return [A]::new()
+'@)
+
+        $iss = [System.Management.Automation.Runspaces.initialsessionstate]::CreateDefault()
+        $iss.Commands.Add($ssfe)
+
+        $ps = [powershell]::Create($iss)
+        $a = $ps.AddCommand("foo").Invoke()[0]
+        $ps.Streams.Error | Should Be $null
+
+        $ps1 = [powershell]::Create($iss)
+        $a1 = $ps1.AddCommand("foo").Invoke()[0]
+        $ps1.Streams.Error | Should Be $null
+
+        $a.SetX(101)
+        $a1.SetX(103)
+
+        $a.GetX() | Should Be 101
+        $a1.GetX() | Should Be 103
+    }
+}
+
+Describe 'variable analysis' {
+    It 'can specify type construct on the local variables' {
+        class A { [string] getFoo() { return 'foo'} }
+
+        class B
+        {
+            static [A] getA ()
+            {
+                [A] $var = [A]::new()
+                return $var
+            }
+        } 
+
+        [B]::getA().getFoo() | Should Be 'foo'
     }
 }

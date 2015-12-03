@@ -1,6 +1,5 @@
-$testDir = [io.path]::GetDirectoryName($myinvocation.mycommand.path)
-$SupportModule = (resolve-path "$testDir\..\CompletionTestSupport.psm1").path
-import-module $SupportModule -force
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+Import-Module $here\..\CompletionTestSupport.psm1 -force
 
 # Convince the Pester Harness adapter that this is a pester test
 if ($false) { Describe; It }
