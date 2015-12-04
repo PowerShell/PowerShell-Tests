@@ -111,7 +111,7 @@ using module WithRoot
                 & (Get-Module ABC) { [A]::new().foo() } | Should Be A
             }
 
-            It 'Can execute type creation in the module context with New-Object' {
+            It -pending 'Can execute type creation in the module context with New-Object' {
                 & (Get-Module ABC) { (New-Object C).foo() } | Should Be C
                 & (Get-Module NoRoot) { (New-Object A).foo() } | Should Be A2
                 & (Get-Module WithRoot) { (New-Object A).foo() } | Should Be A0

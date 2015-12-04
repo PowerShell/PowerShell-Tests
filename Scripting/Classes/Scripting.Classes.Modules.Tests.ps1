@@ -44,7 +44,7 @@ class RandomWrapper
 }
 '@
 
-        It 'use different sessionStates for different modules' {
+        It -pending 'use different sessionStates for different modules' {
             $ps = 1..2 | % { $p = [powershell]::Create().AddScript(@'
 Import-Module Random
 '@)

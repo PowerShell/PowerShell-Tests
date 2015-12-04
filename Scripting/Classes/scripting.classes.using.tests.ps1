@@ -171,7 +171,7 @@ using module Foo
             $err.FullyQualifiedErrorId | Should Be TypeNotFound
         }
 
-        It "can use class from another module in New-Object by short name" {
+        It -pending "can use class from another module in New-Object by short name" {
             $foo = [scriptblock]::Create(@"
 using module FooWithManifest
 New-Object Foo
@@ -226,7 +226,7 @@ using module FooWithManifest
                 $err.FullyQualifiedErrorId | Should Be AmbiguousTypeReference
             }
 
-            It "cannot use in New-Object" {
+            It -pending "cannot use in New-Object" {
                 $err = Get-RuntimeError @"
 using module Foo
 using module FooWithManifest
@@ -235,7 +235,7 @@ New-Object Foo
                 $err.FullyQualifiedErrorId | Should Be 'AmbiguousTypeReference,Microsoft.PowerShell.Commands.NewObjectCommand'
             }
 
-            It "cannot use [type] cast from string" {
+            It -pending "cannot use [type] cast from string" {
                 $err = Get-RuntimeError @"
 using module Foo
 using module FooWithManifest

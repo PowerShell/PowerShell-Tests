@@ -698,7 +698,7 @@ class B
 
 '@).Invoke()[0]
 
-        It 'can do type lookup by name' {
+        It -pending 'can do type lookup by name' {
             $b.getA1() | Should Be 'A'
         }
 
