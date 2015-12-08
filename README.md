@@ -4,8 +4,8 @@ This project represents a selection of tests that the PowerShell team
 uses when testing PowerShell. More than 12 years of active 
 development on PowerShell, we have created many different script based
 test frameworks. Early in 2015 we started the migration process of our
-internally created script based framework tests to the Pester 
-framework ([https://github.com/pester/Pester]) and this project represents 
+internally created script based framework tests to the [Pester 
+framework](https://github.com/pester/Pester) and this project represents 
 the early fruits of that labor. Our plan is to continue to migrate our
 current tests and release them in this Project, with the aim of having all 
 of our tests available in the OSS community using OSS test frameworks.
