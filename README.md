@@ -1,4 +1,4 @@
-﻿# PowerShell-Tests
+# PowerShell-Tests
 
 This project represents a selection of tests that the PowerShell team
 uses when testing PowerShell. More than 12 years of active 
