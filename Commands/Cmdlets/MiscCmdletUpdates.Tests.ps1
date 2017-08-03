@@ -18,7 +18,7 @@ Describe "GetDateFormatUpdates" {
 
     It "Verifies that FileDateTime format works" {
         $date = Get-Date
-        $expectedFormat = "{0:yyyyMMddTHHmmssffff}" -f $date
+        $expectedFormat = "{0:yyyyMMddThhmmssffff}" -f $date
         $actualFormat = Get-Date -Date $date -Format FileDateTime
         
         $actualFormat | Should be $expectedFormat        
@@ -26,7 +26,7 @@ Describe "GetDateFormatUpdates" {
 
     It "Verifies that FileDateTimeUniversal format works" {
         $date = (Get-Date).ToUniversalTime()
-        $expectedFormat = "{0:yyyyMMddTHHmmssffffZ}" -f $date
+        $expectedFormat = "{0:yyyyMMddThhmmssffffZ}" -f $date
         $actualFormat = Get-Date -Date $date -Format FileDateTimeUniversal
         
         $actualFormat | Should be $expectedFormat        
