@@ -1,5 +1,7 @@
 # PowerShell-Tests
 
+*NOTE* This repo has been superceded by [PowerShell/PowerShell](https://github.com/PowerShell/PowerShell/tree/master/test) and will be deleted by Sept 1st, 2017
+
 This project represents a selection of tests that the PowerShell team
 uses when testing PowerShell. More than 12 years of active 
 development on PowerShell, we have created many different script based
